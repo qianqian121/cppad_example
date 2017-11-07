@@ -21,11 +21,39 @@ namespace {
         return y;
     }
 }
+
+using CppAD::AD;           // use AD as abbreviation for CppAD::AD
+using std::vector;         // use vector as abbreviation for std::vector
+
+void exercise3() {
+//    Compute and print the derivative of f ( x ) = exp ( x ) - 1 - x - x 2 / 2 at the point x = .5 .
+    int k = 3;
+    vector<double> a = {1.0, 1.0, 0.5};
+
+    int n = 1;
+    vector<AD<double>> X(n);
+    X[0] = 0.5;
+    CppAD::Independent(X);
+    int m = 1;
+    vector<AD<double>> Y(m);
+    Y[0] = exp(X[0]) - Poly(a, X[0]);
+//    Y[0] = exp(X[0]);
+//    Y[0] = Poly(a, X[0]);
+    CppAD::ADFun<double> f(X, Y);
+    vector<double> jac(m*n);
+    vector<double> x(n);
+    x[0] = 0.5;
+    jac = f.Jacobian(x);
+    std::cout << "f'(0.5) computed by CppAD = " << jac[0] << std::endl;
+}
+
 // main program
 int main(void)
 {     using CppAD::AD;           // use AD as abbreviation for CppAD::AD
     using std::vector;         // use vector as abbreviation for std::vector
     size_t i;                  // a temporary index
+
+    exercise3();
 
     // vector of polynomial coefficients
     size_t k = 5;              // number of polynomial coefficients
